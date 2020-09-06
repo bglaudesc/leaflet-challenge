@@ -44,7 +44,7 @@ function createMap(features) {
             37.09, -95.71
         ],
         zoom: 5,
-        layers: [streetmap]
+        layers: [darkmap, features]
     });
 
     // Create a layer control containing our baseMaps
@@ -81,11 +81,22 @@ function createMarkers(reponseData) {
         style: function (geoJsonFeature) {
             console.log(geoJsonFeature)
             return {
-                radius:geoJsonFeature.properties.mag*5,
-                opacity:0.6,
-                fillOpacity:0.6,
-                color:getColor(geoJsonFeature.properties.sig)
+                radius: setsize(geoJsonFeature.properties.mag),
+                opacity: 0.6,
+                fillOpacity: 0.6,
+                color: getColor(geoJsonFeature.properties.sig)
             }
+        },
+        onEachFeature: function (feature, layer) {
+            layer.bindPopup(`
+            <h2>Earthquake: ${feature.properties.place}</h2>
+            <hr>
+            <h4>Time: ${new Date(feature.properties.time)}</h4>
+            <hr>
+            <h4>Magnitued: ${feature.properties.mag}</h4>
+            <hr>
+            <h4>Significance: ${feature.properties.sig}</h4>
+            `)
         }
     })
 
@@ -93,11 +104,20 @@ function createMarkers(reponseData) {
 }
 
 function getColor(d) {
-    return d > 1000 ? '#FC4E2A' :
-        d > 750 ? '#FD8D3C' :
-            d > 500 ? '#FEB24C' :
-                d > 250 ? '#FED976' :
+    return d > 1000 ? '#C9565E' :
+        d > 750 ? '#EB7B6f' :
+            d > 500 ? '#F0A591' :
+                d > 250 ? '#F1D1C3' :
                     '#FFFFFF';
+}
+
+function setsize(d) {
+    return d > 5 ? d * 10 :
+        d > 4 ? d * 8 :
+            d > 3 ? d * 2 :
+                d > 2 ? d :
+                    d > 1 ? d :
+                        0.5;
 }
 
 
